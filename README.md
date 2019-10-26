@@ -1,4 +1,4 @@
-# Jinglepins-server
+# Jinglepings-server
 
 Ping! Ping! Jingleping!
 
