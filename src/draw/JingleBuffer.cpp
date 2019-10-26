@@ -2,7 +2,7 @@
 
 //! Constructor for fast JinglePing buffer
 //! Required fixed size due to implicit creation in unordered_map
-JingleBuffer::JingleBuffer() : buffer(cv::Mat::zeros(cv::Size(JINGLE_FRAME_WIDTH, JINGLE_FRAME_HEIGTH), CV_8UC4)) {
+JingleBuffer::JingleBuffer() : buffer(cv::Mat::zeros(cv::Size(JINGLE_FRAME_WIDTH, JINGLE_FRAME_HEIGHT), CV_8UC4)) {
 }
 
 //! Uses high performance method to set a pixel to a value (uint8_t per channel, 0-0xff)
