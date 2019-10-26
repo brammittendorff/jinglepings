@@ -35,26 +35,34 @@ void JingleController::drawPixel(uint64_t sourceAddr, int y, int x, uint32_t val
     mainBuffer.setPixel(y, x, value);
 }
 
-cv::Mat JingleController::get4Buffers() {
+cv::Mat JingleController::getMainBuffer() {
+    return mainBuffer.getBuffer();
+}
+
+static inline std::string idToHex(uint64_t id) {
+    char label[17];
+    std::snprintf(label, sizeof label, "%016lx", id);
+    return std::string(label);
+}
+
+cv::Mat JingleController::getBuffers() {
     int width = mainBuffer.getBuffer().cols;
     int height = mainBuffer.getBuffer().rows;
-    cv::Mat matDst = cv::Mat::zeros(cv::Size(width * 2, height * 2), CV_8UC4);
+    cv::Mat matDst = cv::Mat::zeros(cv::Size(width, height * (sourceFrames.size() + 1)), CV_8UC4);
 
-    // Cut first buffer
+    // Draw first buffer
     cv::Mat matRoi = matDst(cv::Rect(0, 0, width, height));
     mainBuffer.getBuffer().copyTo(matRoi);
 
-    // Cut second buffer
-    matRoi = matDst(cv::Rect(width, 0, width, height));
-    sourceFrames[1u].getBuffer().copyTo(matRoi);
+    // Draw other buffers
+    auto h = 0;
+    for (const auto &buf: sourceFrames ) {
+        matRoi = matDst(cv::Rect(0, h += height, width, height));
+        buf.second.getBuffer().copyTo(matRoi);
 
-    // Cut third buffer
-    matRoi = matDst(cv::Rect(0, height, width, height));
-    sourceFrames[2u].getBuffer().copyTo(matRoi);
-
-    // Cut fourth buffer
-    matRoi = matDst(cv::Rect(width, height, width, height));
-    sourceFrames[3u].getBuffer().copyTo(matRoi);
+        cv::rectangle(matRoi, cv::Rect(0, 0, 160, 16), cv::Scalar(0,0,0, 255),  CV_FILLED);
+        cv::putText(matRoi, idToHex(buf.first), cv::Point(0, 14), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255,255,255, 255), 1);
+    }
 
     return matDst;
 }
