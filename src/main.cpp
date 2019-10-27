@@ -54,7 +54,8 @@ int mainCreator(JingleController &controller) {
 }
 
 int main(int argc, const char *argv[]) {
-    JingleController jingleController;
+    std::filesystem::path path = JINGLE_BLACKLIST_FILE;
+    JingleController jingleController(path);
     Tui tui(jingleController);
     Socket s;
 

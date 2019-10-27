@@ -1,5 +1,18 @@
 #include "JingleController.h"
 
+JingleController::JingleController(std::filesystem::path &blacklistFile) : blacklistFile(blacklistFile) {
+    // Get blacklist from disk if possible
+    if (std::filesystem::exists(blacklistFile)) {
+        std::ifstream bin(blacklistFile);
+        while (bin) {
+            uint64_t prefix;
+            bin >> std::hex >> prefix;
+            blacklist.emplace(prefix);
+        }
+        bin.close();
+    }
+}
+
 //! Draw a pixel on the Jingle board
 //! puts a pixel on the main board with the specified values, and on a source
 //! specific board to keep track of submitted images from each IP address.
@@ -71,6 +84,12 @@ void JingleController::drawPixel(uint64_t sourceAddr, int y, int x, uint32_t val
 //! \param sourceAddr upper 64 bits of the IPV6 source address
 void JingleController::addToBlacklist(uint64_t sourceAddr) {
     blacklist.emplace(sourceAddr);
+
+    std::ofstream bout(blacklistFile);
+    for(const auto prefix : blacklist) {
+        bout << std::hex << std::setfill('0') << std::setw(16) << prefix << std::endl;
+    }
+    bout.close();
 }
 
 //! Remove a source address identifier to the blacklist.
