@@ -1,6 +1,8 @@
 #ifndef JINGLE_BUFFERS_JINGLECONTROLLER_H
 #define JINGLE_BUFFERS_JINGLECONTROLLER_H
 
+#include <unordered_map>
+#include <unordered_set>
 #include "../draw/JingleBuffer.h"
 
 class JingleController {
@@ -9,12 +11,19 @@ public:
 
     void drawPixel(uint64_t sourceAddr, int y, int x, uint32_t value);
 
+    void addToBlacklist(uint64_t srcAddr);
+
+    void removeFromBlacklist(uint64_t srcAddr);
+
+    std::unordered_set<uint64_t> getBlacklist();
+
     cv::Mat getMainBuffer();
 
     cv::Mat getBuffers();
 
 private:
     std::unordered_map<uint64_t, JingleBuffer> sourceFrames = {};
+    std::unordered_set<uint64_t> blacklist = {};
     JingleBuffer mainBuffer;
 };
 

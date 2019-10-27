@@ -22,7 +22,7 @@ void JingleController::drawPixel(uint64_t sourceAddr, int y, int x, uint8_t a, u
 //! Draw a pixel on the Jingle board
 //! puts a pixel on the main board with the specified values, and on a source
 //! specific board to keep track of submitted images from each IP address.
-//! \param sourceAddr IPV6 source address
+//! \param upper 64 bits of the IPV6 source address
 //! \param y
 //! \param x
 //! \param value
@@ -31,8 +31,28 @@ void JingleController::drawPixel(uint64_t sourceAddr, int y, int x, uint32_t val
     JingleBuffer sourceFrame = sourceFrames[sourceAddr];
     sourceFrame.setPixel(y, x, value);
 
-    // Put the pixel on the main board
-    mainBuffer.setPixel(y, x, value);
+    // Put the pixel on the main board if the source has not been blacklisted
+    if (blacklist.find(sourceAddr) == blacklist.end()) {
+        mainBuffer.setPixel(y, x, value);
+    }
+}
+
+//! Add a source address identifier to the blacklist.
+//! \param sourceAddr upper 64 bits of the IPV6 source address
+void JingleController::addToBlacklist(uint64_t sourceAddr) {
+    blacklist.emplace(sourceAddr);
+}
+
+//! Remove a source address identifier to the blacklist.
+//! \param sourceAddr upper 64 bits of the IPV6 source address
+void JingleController::removeFromBlacklist(uint64_t sourceAddr) {
+    blacklist.erase(sourceAddr);
+}
+
+//! Get the blacklist.
+//! \return the blacklist
+std::unordered_set<uint64_t> JingleController::getBlacklist() {
+    return blacklist;
 }
 
 cv::Mat JingleController::getMainBuffer() {
