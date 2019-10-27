@@ -3,6 +3,8 @@ project(jinglepings-server)
 find_package(OpenCV REQUIRED)
 find_package(Threads REQUIRED)
 
+set(CMAKE_CXX_STANDARD 17)
+
 set(SOURCE src/main.cpp
         src/draw/JingleBuffer.cpp
         src/draw/JingleBuffer.h

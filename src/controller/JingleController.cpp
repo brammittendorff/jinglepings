@@ -11,12 +11,28 @@
 //! \param g
 //! \param b
 void JingleController::drawPixel(uint64_t sourceAddr, int y, int x, uint8_t a, uint8_t r, uint8_t g, uint8_t b) {
-    // Find the private buffer of this source to update the image
-    JingleBuffer sourceFrame = sourceFrames[sourceAddr];
-    sourceFrame.setPixel(y, x, a, r, g, b);
+    // Check if sourceAddr is known
+    sourceFramesLock.lock_shared();
+    if (sourceFrames.find(sourceAddr) == sourceFrames.end()) {
+        sourceFramesLock.unlock_shared();
+        sourceFramesLock.lock();
 
-    // Put the pixel on the main board
-    mainBuffer.setPixel(y, x, a, r, g, b);
+        // Re-check in case another thread added it
+        sourceFrames.try_emplace(sourceAddr, JingleBuffer());
+
+        // The ayes have it, unlock!
+        sourceFramesLock.unlock();
+        sourceFramesLock.lock_shared();
+    }
+
+    // Set the pixel
+    sourceFrames[sourceAddr].setPixel(y, x, a, r, g, b);
+    sourceFramesLock.unlock_shared();
+
+    // Put the pixel on the main board if the source has not been blacklisted
+    if (blacklist.find(sourceAddr) == blacklist.end()) {
+        mainBuffer.setPixel(y, x, a, r, g, b);
+    }
 }
 
 //! Draw a pixel on the Jingle board
@@ -27,9 +43,23 @@ void JingleController::drawPixel(uint64_t sourceAddr, int y, int x, uint8_t a, u
 //! \param x
 //! \param value
 void JingleController::drawPixel(uint64_t sourceAddr, int y, int x, uint32_t value) {
+    // Check if sourceAddr is known
+    sourceFramesLock.lock_shared();
+    if (sourceFrames.find(sourceAddr) == sourceFrames.end()) {
+        sourceFramesLock.unlock_shared();
+        sourceFramesLock.lock();
+
+        // Re-check in case another thread added it
+        sourceFrames.try_emplace(sourceAddr, JingleBuffer());
+
+        // The ayes have it, unlock!
+        sourceFramesLock.unlock();
+        sourceFramesLock.lock_shared();
+    }
+
     // Find the private buffer of this source to update the image
-    JingleBuffer sourceFrame = sourceFrames[sourceAddr];
-    sourceFrame.setPixel(y, x, value);
+    sourceFrames[sourceAddr].setPixel(y, x, value);
+    sourceFramesLock.unlock_shared();
 
     // Put the pixel on the main board if the source has not been blacklisted
     if (blacklist.find(sourceAddr) == blacklist.end()) {

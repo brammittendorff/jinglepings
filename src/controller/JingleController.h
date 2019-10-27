@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <unordered_set>
+#include <shared_mutex>
 #include "../draw/JingleBuffer.h"
 
 class JingleController {
@@ -25,6 +26,7 @@ private:
     std::unordered_map<uint64_t, JingleBuffer> sourceFrames = {};
     std::unordered_set<uint64_t> blacklist = {0xfe80000000000000};
     JingleBuffer mainBuffer;
+    std::shared_mutex sourceFramesLock;
 };
 
 #endif //JINGLE_BUFFERS_JINGLECONTROLLER_H
