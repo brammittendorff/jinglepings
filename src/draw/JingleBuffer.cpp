@@ -15,7 +15,9 @@ JingleBuffer::JingleBuffer() : buffer(cv::Mat::zeros(cv::Size(JINGLE_FRAME_WIDTH
 void JingleBuffer::setPixel(int y, int x, uint8_t a, uint8_t r, uint8_t g, uint8_t b) {
     // Convert incoming ARGB values to locally stored ARGB uint32_t
     uint32_t val = a << 24u | r << 16u | g << 8u | b;
-    buffer.at<uint32_t>(y, x) = val;
+    if (y < buffer.rows && x < buffer.cols) {
+        buffer.at<int32_t>(y, x) = reinterpret_cast<int32_t&>(val);
+    }
 }
 
 //! Uses high performance method to set a pixel to a value (uint8_t per channel, 0-0xff)
@@ -23,7 +25,9 @@ void JingleBuffer::setPixel(int y, int x, uint8_t a, uint8_t r, uint8_t g, uint8
 //! \param x X position
 //! \param value ARGB value for a pixel
 void JingleBuffer::setPixel(int y, int x, uint32_t value) {
-    buffer.at<uint32_t>(y, x) = value;
+    if (y < buffer.rows && x < buffer.cols) {
+        buffer.at<int32_t>(y, x) = reinterpret_cast<int32_t&>(value);
+    }
 }
 
 //! Uses a vector of (r,g,b,a) to set a pixel in the buffer
@@ -31,7 +35,9 @@ void JingleBuffer::setPixel(int y, int x, uint32_t value) {
 //! \param x
 //! \param value
 void JingleBuffer::setPixel(int y, int x, const cv::Vec4b &value) {
-    buffer.at<cv::Vec4b>(y, x) = value;
+    if (y < buffer.rows && x < buffer.cols) {
+        buffer.at<cv::Vec4b>(y, x) = value;
+    }
 }
 
 //! Returns reference to internal OpenCV buffer
