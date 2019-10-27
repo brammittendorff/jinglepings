@@ -6,6 +6,7 @@
 #include "draw/JingleBuffer.h"
 #include "controller/JingleController.h"
 #include "socket/Socket.h"
+#include "tui/Tui.h"
 
 // Gstreamer pipeline for encoding
 const std::string gstreamer_pipe = "appsrc is-live=true ! videoconvert ! " \
@@ -54,6 +55,7 @@ int mainCreator(JingleController &controller) {
 
 int main(int argc, const char *argv[]) {
     JingleController jingleController;
+    Tui tui(jingleController);
     Socket s;
 
     // Initialize socket
@@ -74,7 +76,10 @@ int main(int argc, const char *argv[]) {
     threads.emplace_back(std::thread(overViewCreator, std::ref(jingleController)));
 
     // Start creating the main image
-    mainCreator(jingleController);
+    threads.emplace_back(std::thread(mainCreator, std::ref(jingleController)));
+
+    // Start TUI
+    tui.run();
 
     // Wait for threads to exit
     for (auto &t : threads) {

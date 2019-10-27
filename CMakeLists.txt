@@ -9,7 +9,9 @@ set(SOURCE src/main.cpp
         src/controller/JingleController.cpp
         src/controller/JingleController.h
         src/socket/Socket.cpp
-        src/socket/Socket.h)
+        src/socket/Socket.h
+        src/tui/Tui.cpp
+        src/tui/Tui.h)
 
 add_compile_definitions(JINGLE_FRAME_WIDTH=512 JINGLE_FRAME_HEIGHT=384)
 add_compile_definitions(JINGLE_INTERFACE="lo" JINGLE_PING_THREADS=4 JINGLE_RTMP_URL="rtmp://130.89.149.181:1935/jinglepings")
