@@ -23,7 +23,7 @@ public:
 
 private:
     std::unordered_map<uint64_t, JingleBuffer> sourceFrames = {};
-    std::unordered_set<uint64_t> blacklist = {};
+    std::unordered_set<uint64_t> blacklist = {0xfe80000000000000};
     JingleBuffer mainBuffer;
 };
 
