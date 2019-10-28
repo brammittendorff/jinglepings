@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 project(jinglepings-server)
-find_package(OpenCV REQUIRED)
+find_package(OpenCV 3.4 REQUIRED)
 find_package(Threads REQUIRED)
 
 set(CMAKE_CXX_STANDARD 17)
