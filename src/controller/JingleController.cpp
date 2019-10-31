@@ -131,13 +131,32 @@ cv::Mat JingleController::getBuffers() {
 
     // Draw other buffers
     auto h = 0;
-    for (const auto &buf: sourceFrames ) {
+
+    for (const auto &buf: sourceFrames) {
+        auto c = 0;
+        auto mat = buf.second.getBuffer();
+
+        cv::MatConstIterator_<int32_t> it = mat.begin<int32_t>(), it_end = mat.end<int32_t>();
+        for(; it != it_end; ++it) {
+            if (*it != 0) {
+                c++;
+            }
+            if (c >= 16) {
+                break;
+            }
+        }
+
+        if (c < 16) {
+            continue;
+        }
+
         matRoi = matDst(cv::Rect(0, h += height, width, height));
         buf.second.getBuffer().copyTo(matRoi);
 
-        cv::rectangle(matRoi, cv::Rect(0, 0, 160, 16), cv::Scalar(0,0,0, 255),  CV_FILLED);
-        cv::putText(matRoi, idToHex(buf.first), cv::Point(0, 14), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255,255,255, 255), 1);
+        cv::rectangle(matRoi, cv::Rect(0, 0, 160, 16), cv::Scalar(0, 0, 0, 255), CV_FILLED);
+        cv::putText(matRoi, idToHex(buf.first), cv::Point(0, 14), cv::FONT_HERSHEY_PLAIN, 1,
+                    cv::Scalar(255, 255, 255, 255), 1);
     }
 
-    return matDst;
+    return matDst.rowRange(0, h+height);
 }
