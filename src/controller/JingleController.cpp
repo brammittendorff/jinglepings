@@ -84,18 +84,24 @@ void JingleController::drawPixel(uint64_t sourceAddr, int y, int x, uint32_t val
 //! \param sourceAddr upper 64 bits of the IPV6 source address
 void JingleController::addToBlacklist(uint64_t sourceAddr) {
     blacklist.emplace(sourceAddr);
-
-    std::ofstream bout(blacklistFile);
-    for(const auto prefix : blacklist) {
-        bout << std::hex << std::setfill('0') << std::setw(16) << prefix << std::endl;
-    }
-    bout.close();
+    this->saveBlackList(sourceAddr);
 }
 
 //! Remove a source address identifier to the blacklist.
 //! \param sourceAddr upper 64 bits of the IPV6 source address
 void JingleController::removeFromBlacklist(uint64_t sourceAddr) {
     blacklist.erase(sourceAddr);
+    this->saveBlackList(sourceAddr);
+}
+
+//! Save the blacklist to file.
+//! \param sourceAddr upper 64 bits of the IPV6 source address
+void JingleController::saveBlackList(uint64_t sourceAddr) {
+    std::ofstream bout(blacklistFile);
+    for (const auto prefix : blacklist) {
+        bout << std::hex << std::setfill('0') << std::setw(16) << prefix << std::endl;
+    }
+    bout.close();
 }
 
 //! Get the blacklist.

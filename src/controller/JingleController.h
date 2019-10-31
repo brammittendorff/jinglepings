@@ -31,6 +31,8 @@ private:
     std::filesystem::path blacklistFile;
     JingleBuffer mainBuffer;
     std::shared_mutex sourceFramesLock;
+
+    void saveBlackList(uint64_t sourceAddr);
 };
 
 #endif //JINGLE_BUFFERS_JINGLECONTROLLER_H
