@@ -1,8 +1,11 @@
 #include <thread>
 #include "Tui.h"
 
+//! Constructor for TUI of JingleController.
+//! \param controller controller to control from the terminal.
 Tui::Tui(JingleController &controller) : controller(controller) {}
 
+//! Run the TUI.
 void Tui::run() {
     using namespace std::chrono_literals;
 
@@ -29,6 +32,8 @@ void Tui::run() {
     }
 }
 
+//! Execute a command.
+//! \param cmd command to execute.
 void Tui::runCommand(std::string &cmd) {
     if (cmd == "help") {
         std::cerr << "Commands are: " << std::endl
@@ -46,24 +51,29 @@ void Tui::runCommand(std::string &cmd) {
     }
 }
 
+//! Get a hex prefix from the user and return it as int.
+//! \return prefix as number.
 static uint64_t getPrefix() {
     uint64_t prefix;
     std::cin >> std::hex >> prefix;
     return prefix;
 }
 
+//! Execute the 'add' command.
 void Tui::cmdAdd() {
     auto prefix = getPrefix();
     controller.addToBlacklist(prefix);
     std::cerr << "Added to blacklist:" << std::hex << std::setfill('0') << std::setw(16) << prefix << std::endl;
 }
 
+//! Execute the 'del' command.
 void Tui::cmdDel() {
     auto prefix = getPrefix();
     controller.removeFromBlacklist(prefix);
     std::cerr << "Removed from blacklist:" << std::hex << std::setfill('0') << std::setw(16) << prefix << std::endl;
 }
 
+//! Execute the 'list' command.
 void Tui::cmdList() {
     for (const auto prefix: controller.getBlacklist()) {
         std::cerr << std::hex << std::setfill('0') << std::setw(16) << prefix << std::endl;

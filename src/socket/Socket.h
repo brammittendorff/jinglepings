@@ -9,12 +9,14 @@
 
 #include "../controller/JingleController.h"
 
+//! \brief Exceptions that occur during socket interaction.
 class SocketException : public std::runtime_error {
 public:
     SocketException(std::string const &msg) :
             std::runtime_error(msg) {}
 };
 
+//! \brief Socket for receiving pings.
 class Socket {
 private:
     // Buffer and timing parameters

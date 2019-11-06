@@ -3,6 +3,7 @@
 
 #include <opencv2/opencv.hpp>
 
+//! \brief Image buffer where pings are stored.
 class JingleBuffer {
 
 public:

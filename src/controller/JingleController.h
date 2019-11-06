@@ -7,6 +7,7 @@
 #include <shared_mutex>
 #include "../draw/JingleBuffer.h"
 
+//! \brief Controller allowing concurrent handling of incoming pings.
 class JingleController {
 public:
     JingleController(std::filesystem::path &blacklistFile);

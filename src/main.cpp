@@ -13,6 +13,8 @@ const std::string gstreamer_pipe = "appsrc is-live=true ! videoconvert ! " \
                                    "x264enc tune=zerolatency key-int-max=250 speed-preset=veryfast quantizer=0 qp-min=0 qp-max=0 byte-stream=true threads=4 ! " \
                                    "flvmux streamable=true ! rtmpsink location=" + std::string(JINGLE_RTMP_URL);
 
+//! Create the overview image for management.
+//! \param controller controller to create image for.
 void overViewCreator(JingleController &controller) {
     using namespace std::chrono_literals;
 
@@ -29,6 +31,8 @@ void overViewCreator(JingleController &controller) {
     }
 }
 
+//! Create the video stream.
+//! \param controller controller to create stream for.
 int mainCreator(JingleController &controller) {
     using namespace std::chrono_literals;
 
