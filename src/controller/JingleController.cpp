@@ -75,27 +75,41 @@ void JingleController::drawPixel(uint64_t sourceAddr, int y, int x, uint32_t val
     sourceFramesLock.unlock_shared();
 
     // Put the pixel on the main board if the source has not been blacklisted
+    blacklistLock.lock_shared();
     if (blacklist.find(sourceAddr) == blacklist.end()) {
         mainBuffer.setPixel(y, x, value);
     }
+    blacklistLock.unlock_shared();
 }
 
 //! Add a source address identifier to the blacklist.
 //! \param sourceAddr upper 64 bits of the IPV6 source address
 void JingleController::addToBlacklist(uint64_t sourceAddr) {
+    blacklistLock.lock();
     blacklist.emplace(sourceAddr);
-
-    std::ofstream bout(blacklistFile);
-    for(const auto prefix : blacklist) {
-        bout << std::hex << std::setfill('0') << std::setw(16) << prefix << std::endl;
-    }
-    bout.close();
+    blacklistLock.unlock();
+    this->saveBlackList();
 }
 
 //! Remove a source address identifier to the blacklist.
 //! \param sourceAddr upper 64 bits of the IPV6 source address
 void JingleController::removeFromBlacklist(uint64_t sourceAddr) {
+    blacklistLock.lock();
     blacklist.erase(sourceAddr);
+    blacklistLock.unlock();
+    this->saveBlackList();
+}
+
+//! Save the blacklist to file.
+//! \param sourceAddr upper 64 bits of the IPV6 source address
+void JingleController::saveBlackList() {
+    std::ofstream bout(blacklistFile);
+    blacklistLock.lock_shared();
+    for (const auto prefix : blacklist) {
+        bout << std::hex << std::setfill('0') << std::setw(16) << prefix << std::endl;
+    }
+    blacklistLock.unlock_shared();
+    bout.close();
 }
 
 //! Get the blacklist.
@@ -125,13 +139,32 @@ cv::Mat JingleController::getBuffers() {
 
     // Draw other buffers
     auto h = 0;
-    for (const auto &buf: sourceFrames ) {
+
+    for (const auto &buf: sourceFrames) {
+        auto c = 0;
+        auto mat = buf.second.getBuffer();
+
+        cv::MatConstIterator_<int32_t> it = mat.begin<int32_t>(), it_end = mat.end<int32_t>();
+        for(; it != it_end; ++it) {
+            if (*it != 0) {
+                c++;
+            }
+            if (c >= 16) {
+                break;
+            }
+        }
+
+        if (c < 16) {
+            continue;
+        }
+
         matRoi = matDst(cv::Rect(0, h += height, width, height));
         buf.second.getBuffer().copyTo(matRoi);
 
-        cv::rectangle(matRoi, cv::Rect(0, 0, 160, 16), cv::Scalar(0,0,0, 255),  CV_FILLED);
-        cv::putText(matRoi, idToHex(buf.first), cv::Point(0, 14), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255,255,255, 255), 1);
+        cv::rectangle(matRoi, cv::Rect(0, 0, 160, 16), cv::Scalar(0, 0, 0, 255), CV_FILLED);
+        cv::putText(matRoi, idToHex(buf.first), cv::Point(0, 14), cv::FONT_HERSHEY_PLAIN, 1,
+                    cv::Scalar(255, 255, 255, 255), 1);
     }
 
-    return matDst;
+    return matDst.rowRange(0, h+height);
 }
