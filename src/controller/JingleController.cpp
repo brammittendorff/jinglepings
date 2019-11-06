@@ -1,5 +1,8 @@
 #include "JingleController.h"
 
+//! Constructor for Jingleping Controller.
+//! Initialises a blacklist from a blacklist file if it exists.
+//! \param blacklistFile file to store/retrive blacklist from.
 JingleController::JingleController(std::filesystem::path &blacklistFile) : blacklistFile(blacklistFile) {
     // Get blacklist from disk if possible
     if (std::filesystem::exists(blacklistFile)) {
@@ -51,7 +54,7 @@ void JingleController::drawPixel(uint64_t sourceAddr, int y, int x, uint8_t a, u
 //! Draw a pixel on the Jingle board
 //! puts a pixel on the main board with the specified values, and on a source
 //! specific board to keep track of submitted images from each IP address.
-//! \param upper 64 bits of the IPV6 source address
+//! \param sourceAddr upper 64 bits of the IPV6 source address
 //! \param y
 //! \param x
 //! \param value
@@ -101,7 +104,6 @@ void JingleController::removeFromBlacklist(uint64_t sourceAddr) {
 }
 
 //! Save the blacklist to file.
-//! \param sourceAddr upper 64 bits of the IPV6 source address
 void JingleController::saveBlackList() {
     std::ofstream bout(blacklistFile);
     blacklistLock.lock_shared();
@@ -118,16 +120,23 @@ std::unordered_set<uint64_t> JingleController::getBlacklist() {
     return blacklist;
 }
 
+//! Get the main buffer.
+//! \return the main buffer
 cv::Mat JingleController::getMainBuffer() {
     return mainBuffer.getBuffer();
 }
 
+//! Convert a 64-bit subnet ID to a hex string.
+//! \return hexadecimal representation of the subnet ID.
 static inline std::string idToHex(uint64_t id) {
     char label[17];
     std::snprintf(label, sizeof label, "%016lx", id);
     return std::string(label);
 }
 
+//! Get a single matrix containing the main buffer,
+//! and all source frames with an annotation.
+//! \return matrix with all buffer contents.
 cv::Mat JingleController::getBuffers() {
     int width = mainBuffer.getBuffer().cols;
     int height = mainBuffer.getBuffer().rows;

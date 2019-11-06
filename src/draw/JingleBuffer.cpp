@@ -41,7 +41,7 @@ void JingleBuffer::setPixel(int y, int x, const cv::Vec4b &value) {
 }
 
 //! Returns reference to internal OpenCV buffer
-//! \return
+//! \return internal OpenCV buffer
 cv::Mat JingleBuffer::getBuffer() const {
     return buffer;
 }

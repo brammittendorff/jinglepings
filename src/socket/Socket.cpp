@@ -1,5 +1,4 @@
 #include <iostream>
-#include <cstdio>
 #include <cstring>
 
 #include <linux/if_ether.h>
@@ -13,6 +12,8 @@
 
 #include "Socket.h"
 
+//! Constructor for socket.
+//! \param interface_name network interface name to listen on.
 Socket::Socket(std::string interface_name) {
     // Create socket
     sockfd = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_IPV6));
@@ -37,6 +38,9 @@ Socket::Socket(std::string interface_name) {
     }
 }
 
+//! Run the socket for a single controller.
+//! This retrieves pixels from the socket and passes them to the given controller.
+//! \param controller controller to send pixels to.
 void Socket::run(JingleController &controller) {
     // Initialize buffers
     struct mmsghdr msgs[msg_count];
@@ -57,6 +61,9 @@ void Socket::run(JingleController &controller) {
     }
 }
 
+//! Retrieve pixels (in the form of ICMPv6 messages) and send them to the controller.
+//! \param msgs buffer to store messages in.
+//! \param controller controller to send pixel information to.
 void Socket::receivePixels(mmsghdr *msgs, JingleController &controller) {
     auto res = recvmmsg(sockfd, msgs, msg_count, 0, &timeout);
     if (res == -1) {
@@ -90,6 +97,9 @@ void Socket::receivePixels(mmsghdr *msgs, JingleController &controller) {
     }
 }
 
+//! Get the interface number corresponding to an interface name.
+//! \param interface_name interface name.
+//! \return interface number.
 int Socket::getInterfaceNumber(std::string &interface_name) {
     struct ifreq ifr;
     memset(&ifr, 0, sizeof(ifr));
