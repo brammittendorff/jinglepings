@@ -30,9 +30,10 @@ private:
     std::unordered_set<uint64_t> blacklist = {0xfe80000000000000};
     std::filesystem::path blacklistFile;
     JingleBuffer mainBuffer;
+    std::shared_mutex blacklistLock;
     std::shared_mutex sourceFramesLock;
 
-    void saveBlackList(uint64_t sourceAddr);
+    void saveBlackList();
 };
 
 #endif //JINGLE_BUFFERS_JINGLECONTROLLER_H

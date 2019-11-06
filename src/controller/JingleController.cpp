@@ -75,32 +75,40 @@ void JingleController::drawPixel(uint64_t sourceAddr, int y, int x, uint32_t val
     sourceFramesLock.unlock_shared();
 
     // Put the pixel on the main board if the source has not been blacklisted
+    blacklistLock.lock_shared();
     if (blacklist.find(sourceAddr) == blacklist.end()) {
         mainBuffer.setPixel(y, x, value);
     }
+    blacklistLock.unlock_shared();
 }
 
 //! Add a source address identifier to the blacklist.
 //! \param sourceAddr upper 64 bits of the IPV6 source address
 void JingleController::addToBlacklist(uint64_t sourceAddr) {
+    blacklistLock.lock();
     blacklist.emplace(sourceAddr);
-    this->saveBlackList(sourceAddr);
+    blacklistLock.unlock();
+    this->saveBlackList();
 }
 
 //! Remove a source address identifier to the blacklist.
 //! \param sourceAddr upper 64 bits of the IPV6 source address
 void JingleController::removeFromBlacklist(uint64_t sourceAddr) {
+    blacklistLock.lock();
     blacklist.erase(sourceAddr);
-    this->saveBlackList(sourceAddr);
+    blacklistLock.unlock();
+    this->saveBlackList();
 }
 
 //! Save the blacklist to file.
 //! \param sourceAddr upper 64 bits of the IPV6 source address
-void JingleController::saveBlackList(uint64_t sourceAddr) {
+void JingleController::saveBlackList() {
     std::ofstream bout(blacklistFile);
+    blacklistLock.lock_shared();
     for (const auto prefix : blacklist) {
         bout << std::hex << std::setfill('0') << std::setw(16) << prefix << std::endl;
     }
+    blacklistLock.unlock_shared();
     bout.close();
 }
 
