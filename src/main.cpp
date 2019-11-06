@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2019 Studenten Net Twente
+ *
+ * Licensed under the EUPL. See the file LICENSE.md in the top level
+ * directory for more details.
+ */
+
 #include <iostream>
 #include <array>
 #include <thread>
