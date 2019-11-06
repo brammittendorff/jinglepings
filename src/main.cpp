@@ -10,14 +10,14 @@
 
 // Gstreamer pipeline for encoding
 const std::string gstreamer_pipe = "appsrc is-live=true ! videoconvert ! " \
-                                   "x264enc tune=zerolatency key-int-max=2500 speed-preset=veryfast quantizer=0 qp-min=0 qp-max=0 byte-stream=true threads=4 ! " \
+                                   "x264enc tune=zerolatency key-int-max=250 speed-preset=veryfast quantizer=0 qp-min=0 qp-max=0 byte-stream=true threads=4 ! " \
                                    "flvmux streamable=true ! rtmpsink location=" + std::string(JINGLE_RTMP_URL);
 
 void overViewCreator(JingleController &controller) {
     using namespace std::chrono_literals;
 
     for (;;) {
-        std::this_thread::sleep_for(30s);
+        std::this_thread::sleep_for(10s);
         try {
             auto success = cv::imwrite("/tmp/overview.png", controller.getBuffers());
             if (!success) {
