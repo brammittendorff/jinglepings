@@ -6,6 +6,7 @@
  */
 
 #include "JingleController.h"
+#include <fstream>
 
 //! Constructor for Jingleping Controller.
 //! Initialises a blacklist from a blacklist file if it exists.
@@ -177,7 +178,7 @@ cv::Mat JingleController::getBuffers() {
         matRoi = matDst(cv::Rect(0, h += height, width, height));
         buf.second.getBuffer().copyTo(matRoi);
 
-        cv::rectangle(matRoi, cv::Rect(0, 0, 160, 16), cv::Scalar(0, 0, 0, 255), CV_FILLED);
+        cv::rectangle(matRoi, cv::Rect(0, 0, 160, 16), cv::Scalar(0, 0, 0, 255), cv::FILLED);
         cv::putText(matRoi, idToHex(buf.first), cv::Point(0, 14), cv::FONT_HERSHEY_PLAIN, 1,
                     cv::Scalar(255, 255, 255, 255), 1);
     }

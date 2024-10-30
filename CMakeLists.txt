@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 project(jinglepings-server)
-find_package(OpenCV 3.4 REQUIRED)
+find_package(OpenCV 4 REQUIRED)
 find_package(Threads REQUIRED)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -23,7 +23,7 @@ set(SOURCE src/main.cpp
         src/tui/Tui.h)
 
 add_compile_definitions(JINGLE_FRAME_WIDTH=1920 JINGLE_FRAME_HEIGHT=1080)
-add_compile_definitions(JINGLE_INTERFACE="lo" JINGLE_PING_THREADS=4 JINGLE_RTMP_URL="rtmp://130.89.149.181:1935/jinglepings")
+add_compile_definitions(JINGLE_INTERFACE="lo" JINGLE_PING_THREADS=1 JINGLE_RTMP_URL="rtmp://37.60.237.32:1935/live/jinglepings")
 add_compile_definitions(JINGLE_BLACKLIST_FILE="blacklist.txt")
 
 add_executable(${PROJECT_NAME} ${SOURCE})

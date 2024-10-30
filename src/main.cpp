@@ -16,9 +16,9 @@
 #include "tui/Tui.h"
 
 // Gstreamer pipeline for encoding
-const std::string gstreamer_pipe = "appsrc is-live=true ! videoconvert ! " \
-                                   "x264enc tune=zerolatency key-int-max=250 speed-preset=veryfast quantizer=0 qp-min=0 qp-max=0 byte-stream=true threads=4 ! " \
-                                   "flvmux streamable=true ! rtmpsink location=" + std::string(JINGLE_RTMP_URL);
+const std::string gstreamer_pipe = "appsrc is-live=true ! videoconvert ! "
+                                   "x264enc tune=zerolatency key-int-max=250 speed-preset=veryfast quantizer=0 qp-min=0 qp-max=0 "
+                                   "byte-stream=true threads=1 ! flvmux streamable=true ! rtmpsink location=" + std::string(JINGLE_RTMP_URL);
 
 //! Create the overview image for management.
 //! \param controller controller to create image for.
@@ -46,11 +46,12 @@ int mainCreator(JingleController &controller) {
     std::cerr << "Opening GStreamer pipe with definition: " << gstreamer_pipe << std::endl;
 
     cv::VideoWriter writer;
-    auto res = writer.open(gstreamer_pipe, cv::CAP_GSTREAMER, 0, (double) 25,
+    auto res = writer.open(gstreamer_pipe, cv::CAP_GSTREAMER, 0, 25.0,
                            cv::Size(JINGLE_FRAME_WIDTH, JINGLE_FRAME_HEIGHT), true);
+
     if (!res) {
         std::cerr << "Error creating GStreamer pipe" << std::endl;
-        exit(1);
+        return EXIT_FAILURE;
     }
 
     for (;;) {
