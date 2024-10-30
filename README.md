@@ -2,7 +2,7 @@
 
 ## Configuration and Building Instructions
 
-Configuration is managed in `CMakeLists.txt`. This guide walks through setting up dependencies, compiling OpenCV 4 with GStreamer support, and building an RTMP server using NGINX with the RTMP module.
+Configuration is managed in `CMakeLists.txt`. This guide walks through setting up dependencies, installing OpenCV with GStreamer support, and building an RTMP server using NGINX with the RTMP module.
 
 ### Dependencies
 
@@ -11,7 +11,7 @@ The project has several dependencies:
 - A C++17 capable compiler
 - CMake
 - OpenCV 4 with GStreamer support
-- GStreamer with x264, flv, and rtmp support
+- GStreamer with x264, flv, and RTMP support
 
 ### Step 1: Install Required Packages on Debian Buster (or Later)
 
@@ -22,52 +22,25 @@ sudo apt update
 sudo apt install -y build-essential cmake gstreamer1.0-plugins-{good,bad,ugly} libpcre3 libpcre3-dev libssl-dev zlib1g-dev unzip
 ```
 
-### Step 2: Compile OpenCV 4 with GStreamer Support
+### Step 2: Install OpenCV with GStreamer Support
 
-Since OpenCV 4 is not included with GStreamer support by default, we need to build it from source with the required flags.
+For most applications, you can install OpenCV with GStreamer support directly via `apt`:
 
-1. **Download OpenCV Source Code**:
+```bash
+sudo apt install -y libopencv-dev python3-opencv
+```
 
-    ```bash
-    cd /usr/local/src
-    wget -O opencv.zip https://github.com/opencv/opencv/archive/4.x.zip
-    unzip opencv.zip
-    cd opencv-4.x
-    ```
+To confirm GStreamer support in the installed OpenCV package, run:
 
-2. **Configure OpenCV with GStreamer**:
+```bash
+python3 -c "import cv2; print(cv2.getBuildInformation())" | grep GStreamer
+```
 
-    In the OpenCV source directory, create a `build` directory and configure the build to include GStreamer:
-
-    ```bash
-    mkdir build
-    cd build
-    cmake -D CMAKE_BUILD_TYPE=Release \
-          -D CMAKE_INSTALL_PREFIX=/usr/local \
-          -D WITH_GSTREAMER=ON \
-          -D WITH_FFMPEG=ON \
-          -D BUILD_opencv_python3=OFF \
-          ..
-    ```
-
-3. **Build and Install OpenCV**:
-
-    ```bash
-    make -j$(nproc)
-    sudo make install
-    ```
-
-4. **Verify the Installation**:
-
-    ```bash
-    python3 -c "import cv2; print(cv2.getBuildInformation())" | grep GStreamer
-    ```
-
-    You should see `GStreamer: YES` if GStreamer support was successfully enabled.
+If the output shows `GStreamer: YES`, you have GStreamer support enabled.
 
 ### Step 3: Compile NGINX with RTMP Module
 
-To enable RTMP streaming, you’ll need to compile NGINX with the RTMP module from source.
+To enable RTMP streaming, compile NGINX with the RTMP module from source.
 
 1. **Download NGINX and the RTMP Module**:
 
@@ -88,7 +61,7 @@ To enable RTMP streaming, you’ll need to compile NGINX with the RTMP module fr
     sudo make install
     ```
 
-    This will install NGINX with RTMP support to `/usr/local/nginx`.
+    This installs NGINX with RTMP support to `/usr/local/nginx`.
 
 3. **Configure NGINX for RTMP Streaming**:
 
