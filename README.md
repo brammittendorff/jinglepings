@@ -1,4 +1,4 @@
-# Jinglepings
+# Jinglepings Server
 
 ## Configuration and Building Instructions
 
